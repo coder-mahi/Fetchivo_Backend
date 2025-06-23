@@ -3,7 +3,6 @@ package com.mahesh.fetchivo.model;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.stereotype.Component;
 
 @Document(collection = "users")
 public class User{

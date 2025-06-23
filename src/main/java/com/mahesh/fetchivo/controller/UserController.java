@@ -1,5 +1,7 @@
 package com.mahesh.fetchivo.controller;
 
+import com.mahesh.fetchivo.api.WheatherResponse;
+import com.mahesh.fetchivo.service.WheatherService;
 import com.mahesh.fetchivo.service.impl.UserServiceImpl;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,13 @@ public class UserController {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    WheatherService wheatherService;
+
+    @GetMapping
+    public ResponseEntity<?> healthCheck(){
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable ObjectId id) {
         return userService.getUser(id)
@@ -31,6 +40,8 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.createUser(user));
     }
+
 }
