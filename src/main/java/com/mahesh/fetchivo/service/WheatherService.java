@@ -2,6 +2,7 @@ package com.mahesh.fetchivo.service;
 
 import com.mahesh.fetchivo.api.WheatherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,8 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class WheatherService {
-    private static final String apiKey = "5ee732acaf5bb4d948563d684d004c28";
+    @Value("{spring.api.key}")
+    private static final String apiKey;
     private static final String city = "New York";
     private static final String API = "http://api.weatherstack.com/current?access_key="+apiKey+"&query=CITY";
 

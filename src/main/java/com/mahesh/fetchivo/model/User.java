@@ -1,32 +1,40 @@
 package com.mahesh.fetchivo.model;
 
+import lombok.Data;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Data
 @Document(collection = "users")
 public class User{
 	@Id
-	public ObjectId userid;
-	public String username;
-	public String email;
-	public void setUserId(ObjectId userid) {
-		this.userid = userid;
-	}
-	public void setUserName(String username) {
-		this.username = username;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
+	private ObjectId id;
+	private String username;
+	private String password;
+	private String role;
 
-	public ObjectId getUserId() {
-		return userid;
-	}
-	public String getUserName() {
-		return username;
-	}
-	public String getUserEmail() {
-		return email;
-	}
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
