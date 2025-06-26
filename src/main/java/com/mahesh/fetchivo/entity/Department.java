@@ -1,6 +1,7 @@
 package com.mahesh.fetchivo.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 public class Department {
