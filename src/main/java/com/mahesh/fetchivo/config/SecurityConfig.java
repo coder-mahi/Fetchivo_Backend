@@ -26,8 +26,10 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .oauth2Login(oauth -> oauth
-                                .loginPage("/oauth2/authorization/google")
-                        // You can also add a success handler here
+                        .loginPage("/oauth2/authorization/google")
+                        .defaultSuccessUrl("/api/home")
+//                            .defaultSuccessUrl("http://localhost:3000/dashboard", true)
+//                        when my frontend working on port 3000
                 );
 
         return http.build();

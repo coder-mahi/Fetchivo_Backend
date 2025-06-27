@@ -8,6 +8,7 @@ class FetchivoApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("Hello testing.........");
 	}
 
 }

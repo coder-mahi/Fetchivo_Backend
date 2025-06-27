@@ -1,15 +1,20 @@
 package com.mahesh.fetchivo.model;
-
-import lombok.Data;
-import org.bson.types.ObjectId;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import java.time.LocalDateTime;
 
+@Document(collection = "users")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
-    private ObjectId id;
+    private String id;
     private String username;
     private String password;
     private String email;
-    private int credits;
+    private String provider;
+    private Integer credits;
+    private LocalDateTime registeredAt;
 }
