@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Welcome</title>
+</head>
+<body>
+<h1>Welcome, <span th:text="${name}">User</span>!</h1>
+<p>Email: <span th:text="${email}">user@example.com</span></p>
+<p>Logged in via: <span th:text="${provider}">provider</span></p>
+<a href="/logout">Logout</a>
+</body>
+</html>

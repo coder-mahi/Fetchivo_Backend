@@ -1,39 +1,47 @@
 package com.mahesh.fetchivo.controller;
 
-import com.mahesh.fetchivo.dto.UserDTO;
 import com.mahesh.fetchivo.model.User;
 import com.mahesh.fetchivo.service.UserService;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import java.util.List;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
-    @Autowired
-    public UserService service;
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/me")
+    public Map<String, Object> getCurrentUser(@AuthenticationPrincipal OAuth2User principal) {
+        if (principal == null) {
+            return Map.of("error", "Not authenticated");
+        }
+
+        User user = userService.getUserByProviderUserId(principal.getName());
+        return Map.of(
+                "id", user.getId(),
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "provider", user.getProvider(),
+                "attributes", user.getAttributes()
+        );
+    }
 
     @GetMapping
-    public List<UserDTO> getAllUser(){
-        return service.getAllUser();
-    }
-    @GetMapping("/{userId}")
-    public User getUser(@PathVariable String userId){
-        return service.findUser(userId);
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
-    @PostMapping
-    public void signUpUser(@RequestBody User user){
-        service.addUser(user);
-    }
-
-    @PutMapping("/{userId}")
-    public boolean update(@PathVariable String userId, @RequestBody User newUser){
-        return service.updateUser(userId,newUser);
-    }
-
-    @DeleteMapping("/{userId}")
-    public boolean deleteUser(@PathVariable String user){
-        return service.deleteUser(user);
+    @GetMapping("/{email}")
+    public User getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email);
     }
 }
