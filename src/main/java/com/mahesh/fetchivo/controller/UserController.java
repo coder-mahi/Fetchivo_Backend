@@ -3,18 +3,36 @@ package com.mahesh.fetchivo.controller;
 import com.mahesh.fetchivo.dto.UserDTO;
 import com.mahesh.fetchivo.model.User;
 import com.mahesh.fetchivo.service.UserService;
+import com.mahesh.fetchivo.utils.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+
     @Autowired
-    UserService service;
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserService service;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping("/all")
     public List<UserDTO> getAllUsers(){
@@ -53,5 +71,4 @@ public class UserController {
             return new ResponseEntity<>("Invalid UserId..!",HttpStatus.BAD_REQUEST);
         }
     }
-
 }

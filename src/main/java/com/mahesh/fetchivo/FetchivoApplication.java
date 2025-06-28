@@ -25,8 +25,8 @@ public class FetchivoApplication {
 
 	@PostConstruct
 	public void testRedis() {
-		redisTemplate.opsForValue().set("test-key", "Mahesh");
-		String value = (String) redisTemplate.opsForValue().get("test-key");
-		System.out.println("Redis value: " + value);
+//		redisTemplate.opsForValue().set("test-key", "Mahesh");
+//		String value = (String) redisTemplate.opsForValue().get("test-key");
+//		System.out.println("Redis value: " + value);
 	}
 }
