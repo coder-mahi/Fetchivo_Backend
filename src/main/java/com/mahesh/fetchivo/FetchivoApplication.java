@@ -18,21 +18,8 @@ public class FetchivoApplication {
 		SpringApplication.run(FetchivoApplication.class, args);
 	}
 
-	@Bean
-	public RestTemplate restTemplate(){
-		return new RestTemplate();
-	}
-
-//	@Bean
-//	public CommandLineRunner run(@Autowired PasswordEncoder encoder) {
-//		return args -> {
-//			System.out.println("fetchivo - all in one downloader");
-//			System.out.println("Encoded 'mahesh' : " + encoder.encode("mahesh"));
-//		};
-//	}
-
 	@PostConstruct
 	public void postConstruct(){
-		System.out.println("POST CONSTRUCT called - SpringBootApplicaton Class");
+		System.out.println("POST CONSTRUCT called - Spring Boot Application Class");
 	}
 }

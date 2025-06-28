@@ -2,11 +2,40 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Welcome</title>
+    <script>
+        function storeToken() {
+            const token = document.getElementById('token').textContent;
+            localStorage.setItem('jwtToken', token);
+            alert('Token stored in local storage!');
+        }
+
+        function useToken() {
+            const token = localStorage.getItem('jwtToken');
+            if (token) {
+                fetch('/api/users/me', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
 </head>
 <body>
 <h1>Welcome, <span th:text="${name}">User</span>!</h1>
 <p>Email: <span th:text="${email}">user@example.com</span></p>
 <p>Logged in via: <span th:text="${provider}">provider</span></p>
+
+<div th:if="${token}">
+    <h3>Your JWT Token:</h3>
+    <p id="token" th:text="${token}"></p>
+    <button onclick="storeToken()">Store Token</button>
+    <button onclick="useToken()">Test Token</button>
+</div>
+
 <a href="/logout">Logout</a>
 </body>
 </html>

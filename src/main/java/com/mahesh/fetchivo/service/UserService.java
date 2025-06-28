@@ -1,56 +1,70 @@
 package com.mahesh.fetchivo.service;
 
 import com.mahesh.fetchivo.dto.UserDTO;
+import com.mahesh.fetchivo.model.User;
 import com.mahesh.fetchivo.repository.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.mahesh.fetchivo.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class UserService {
+    @Autowired
+    UserRepository repo;
 
-    private final UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public Optional<User> getUser(String userid){
+        return repo.findById(userid);
     }
 
-    public User processOAuth2User(OAuth2User oAuth2User, String provider) {
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-        String providerUserId = oAuth2User.getName();
-        String name = (String) attributes.getOrDefault("name", "");
-        String email = (String) attributes.getOrDefault("email", "");
+    public void createUser(User newUser){
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        repo.save(newUser);
+    }
 
-        User user = userRepository.findByProviderUserId(providerUserId);
-        if (user == null) {
-            user = new User(providerUserId, name, email, provider, attributes);
-        } else {
-            user.setAttributes(attributes);
-            user.setName(name);
-            user.setEmail(email);
+    public List<UserDTO> getAllUsers(){
+        List<User> users = repo.findAll();
+        return users.stream()
+                .map(user -> new UserDTO(user.getUserid(),user.getUsername()))
+                .collect(Collectors.toList());
+    }
+
+    public void updateUser(String userid, User newUser) {
+        if (newUser != null) {
+
+            // Check for empty fields
+            if (isNullOrEmpty(newUser.getUsername()) || isNullOrEmpty(newUser.getPassword())) {
+                throw new IllegalArgumentException("Username or password cannot be empty.");
+            }
+
+            Optional<User> optionalUser = repo.findById(userid);
+
+            if (optionalUser.isPresent()) {
+                User oldUser = optionalUser.get();
+                oldUser.setUsername(newUser.getUsername());
+                oldUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+                repo.save(oldUser);
+            } else {
+                throw new RuntimeException("User with ID " + userid + " not found.");
+            }
         }
-
-        return userRepository.save(user);
     }
 
-    public User getUserByProviderUserId(String providerUserId) {
-        return userRepository.findByProviderUserId(providerUserId);
+    // Helper method
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
     }
 
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+
+    public void deleteUser(String userId){
+        repo.deleteById(userId);
     }
 }

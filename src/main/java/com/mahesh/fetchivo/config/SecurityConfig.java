@@ -1,52 +1,46 @@
 package com.mahesh.fetchivo.config;
 
-import com.mahesh.fetchivo.service.CustomOAuth2UserService;
+import com.mahesh.fetchivo.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-
-    private final CustomOAuth2UserService customOAuth2UserService;
-
-    public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
-        this.customOAuth2UserService = customOAuth2UserService;
+public class SecurityConfig{
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws  Exception{
+        http.
+                csrf().disable()
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .anyRequest()
+                                .authenticated()
+                ).httpBasic();
+        return http.build();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/login**", "/error**").permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .defaultSuccessUrl("/welcome", true)
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/").permitAll()
-                );
+    PasswordEncoder encoder(){
+        return new BCryptPasswordEncoder();
+    }
 
-        return http.build();
+    @Bean
+    DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailsService){
+        DaoAuthenticationProvider dao = new DaoAuthenticationProvider();
+        dao.setPasswordEncoder(encoder());
+        dao.setUserDetailsService(userDetailsService);
+        return dao;
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
+        return configuration.getAuthenticationManager();
     }
 }
