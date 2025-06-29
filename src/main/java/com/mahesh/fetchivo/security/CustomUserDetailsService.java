@@ -2,6 +2,7 @@ package com.mahesh.fetchivo.security;
 
 import com.mahesh.fetchivo.model.User;
 import com.mahesh.fetchivo.repository.UserRepository;
+import com.sun.security.auth.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,10 +17,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = repo.findAll().stream()
-                .filter(u -> u.getUsername().equals(username))
-                .findFirst()
+        User user = repo.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        return new UserPrincipal(user);
+        return new CustomUserDetails(user);
     }
 }

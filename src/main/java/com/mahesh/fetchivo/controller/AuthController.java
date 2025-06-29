@@ -4,47 +4,31 @@ import com.mahesh.fetchivo.dto.LoginRequest;
 import com.mahesh.fetchivo.dto.LoginResponse;
 import com.mahesh.fetchivo.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/login")
 public class AuthController {
+    @Autowired
+    JwtUtil jwtUtil;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest loginRequest) {
-        try {
-            // Authenticate the user
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
+    @PostMapping
+    public LoginResponse login(@RequestBody LoginRequest loginRequest){
+            authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(
                             loginRequest.getUsername(),
                             loginRequest.getPassword()
-                    )
-            );
+                    ));
 
-            // Load user details
-            final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-
-            // Generate JWT
-            final String jwt = jwtUtil.generateToken(userDetails.getUsername());
-
-            return ResponseEntity.ok(new LoginResponse(jwt));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.badRequest().body("Invalid username or password");
-        }
+            LoginResponse response = new LoginResponse(jwtUtil.generateToken(loginRequest.getUsername()));
+        return response;
     }
 }

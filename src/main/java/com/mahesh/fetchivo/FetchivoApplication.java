@@ -20,13 +20,13 @@ public class FetchivoApplication {
 		SpringApplication.run(FetchivoApplication.class, args);
 	}
 
-	@Autowired
-	private RedisTemplate redisTemplate;
-
-	@PostConstruct
-	public void testRedis() {
+//	@Autowired
+//	private RedisTemplate redisTemplate;
+//
+//	@PostConstruct
+//	public void testRedis() {
 //		redisTemplate.opsForValue().set("test-key", "Mahesh");
 //		String value = (String) redisTemplate.opsForValue().get("test-key");
 //		System.out.println("Redis value: " + value);
-	}
+//	}
 }

@@ -1,7 +1,9 @@
 package com.mahesh.fetchivo.config;
 
+import com.mahesh.fetchivo.dto.LoginRequest;
 import com.mahesh.fetchivo.security.CustomUserDetailsService;
-import com.mahesh.fetchivo.security.JwtAuthFilter;
+//import com.mahesh.fetchivo.security.JwtAuthFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,17 +20,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtAuthFilter jwtFilter) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated()
-                )
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                ).httpBasic();
+
         return http.build();
     }
+
 
     @Bean
     PasswordEncoder encoder() {
@@ -36,15 +38,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailsService) {
-        DaoAuthenticationProvider dao = new DaoAuthenticationProvider();
-        dao.setPasswordEncoder(encoder());
-        dao.setUserDetailsService(userDetailsService);
-        return dao;
+    public DaoAuthenticationProvider daoAuthenticationProvider(CustomUserDetailsService customUserDetailsService){
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setPasswordEncoder(encoder());
+        daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
+        return daoAuthenticationProvider;
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+    AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
         return configuration.getAuthenticationManager();
     }
 }

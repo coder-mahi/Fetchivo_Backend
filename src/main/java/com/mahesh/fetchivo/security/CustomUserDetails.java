@@ -7,17 +7,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-public class UserPrincipal implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private final User user;
 
-    public UserPrincipal(User user) {
+    public CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    public User getUserEntity() {
+        return user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Add roles if needed. For now, return empty.
+        // Return roles or authorities if you have them; else empty
         return Collections.emptyList();
     }
 
@@ -33,21 +37,21 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return true; // Customize if needed
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return true; // Customize if needed
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return true; // Customize if needed
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true; // Customize if needed
     }
 }
